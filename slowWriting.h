@@ -2,6 +2,7 @@
 #define SLOWWR_H
 #include <stdio.h>
 #include <unistd.h>
+#include "cross_sleep.h"
 void printSlow(const char *text) {
     for (int i = 0; text[i] != '\0'; i++) {
         if (text[i] == ' ') {
@@ -9,7 +10,7 @@ void printSlow(const char *text) {
         } else {
         printf("%c", text[i]);
         fflush(stdout);
-        usleep(1000); 
+        cross_sleep(1000); 
         }
     }
 }

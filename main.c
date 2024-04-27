@@ -1,13 +1,31 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <windows.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <windows.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "depletionLogic.h"
 #include "showDisplays.h"
 #include "slowWriting.h"
+#include "cross_sleep.h"
+
+#if defined(_WIN32) || defined(_WIN64)
+
+void clearTerm() {
+    // Windows-specific implementation
+    system("cls");
+}
+
+#else
+
+void clearTerm() {
+    // Unix-specific implementation
+    system("cls");
+}
+
+#endif
 
 //Global variables
 double vis, taint;
@@ -15,15 +33,15 @@ int mix;
 int potionVis, potionTaint, money;
 double marketVis, marketTaint;
 FILE *savefile;
-boolean save = true;
+bool save = true;
 
 void displayUpdate(){
     for (int i = 0; i <= 5; i++) {
     cauldronAnim(i);
     printf("\n");
     printf("Vis: %lf units    Taint: %lf units",vis,taint);
-    Sleep(500);
-    system("cls");
+    cross_sleep(500000);
+    clearTerm();
     }
 
 }
@@ -50,9 +68,9 @@ int main(){
         marketTaint = marketVis;
         marketVis = temp;
     }
-    system("cls");
-    splashScreen();
-    system("cls");
+    clearTerm();
+    
+    clearTerm();
     const char *filename = "dragonMix.savedisk";
     if (access(filename, F_OK) != 0) {
         printf("It looks like your save file is gone or you started the game for the first time.\n");
@@ -65,7 +83,7 @@ int main(){
         if (opt == 'y' || opt == 'Y')
         {
             save = true;
-        } else {
+        } else if (opt == 'n' || opt == 'N') {
             printSlow("\nWarning you will play the game without a save file\nYour progress won't be saved.");
             save = false;
         }    
@@ -79,6 +97,7 @@ int main(){
     }
     
     menu1:
+    printf("\n");
     printSlow("What do you want to do?\n");
     printSlow("1. Make Potions\n");
     printSlow("2. Check Your Inventory\n");
@@ -91,7 +110,7 @@ int main(){
     switch (option)
     {
     case 1:
-        system("cls");
+        clearTerm();
         printSlow("Enter the amout of mixings: ");
         scanf("%d",&mix);
         printSlow("Enter designated Vis and Taint amounts\nVis: ");
@@ -135,11 +154,12 @@ int main(){
             }
         break;
     case 5:
-        savefile = fopen("dragonMix.savedisk","w");
+        if (save){savefile = fopen("dragonMix.savedisk","w");
         printf("Saving...\n");
         fprintf(savefile,"%d\n",potionVis);
         fprintf(savefile,"%d\n",potionTaint);
         fprintf(savefile,"%d",money);
+        }
         printf("Exiting...");
         fclose(savefile);
         return 0;
