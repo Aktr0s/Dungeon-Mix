@@ -9,23 +9,8 @@
 #include "depletionLogic.h"
 #include "showDisplays.h"
 #include "slowWriting.h"
-#include "cross_sleep.h"
+#include "crossFunctions.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-
-void clearTerm() {
-    // Windows-specific implementation
-    system("cls");
-}
-
-#else
-
-void clearTerm() {
-    // Unix-specific implementation
-    system("cls");
-}
-
-#endif
 
 //Global variables
 double vis, taint;
@@ -133,12 +118,15 @@ int main(){
     endGame(vis,taint,mix);
         break;
     case 2:
+        clearTerm();
         displayPotions(potionVis, potionTaint, money);
         break;
     case 3:
+        clearTerm();
         printSlow("\nThe game princible is very simple.\nYou brew potions with vis and taint amount which are the ingridients. \nYou also chose how many times you will mix the brew. \nDepending on your luck (or rather some stupid math) you will brew a Good (Vis) or Bad (Tainted) potion.\n\n");
         break;
     case 4:
+        clearTerm();
         printSlow("Current market values: \n");
         printSlow("Vis potion: ");
         printf("%lf\n",marketVis);
@@ -164,7 +152,7 @@ int main(){
         fclose(savefile);
         return 0;
     default:
-        system("cls");
+        clearTerm();
         printSlow("Wrong Choice. Please Select Again.");
         break;
     }

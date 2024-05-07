@@ -2,7 +2,7 @@
 #define SLOWWR_H
 #include <stdio.h>
 #include <unistd.h>
-#include "cross_sleep.h"
+#include "crossFunctions.h"
 void printSlow(const char *text) {
     for (int i = 0; text[i] != '\0'; i++) {
         if (text[i] == ' ') {
