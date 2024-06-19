@@ -27,7 +27,7 @@ void clearTerm() {
 
 void clearTerm() {
     // Unix-specific implementation
-    system("cls");
+    system("clear");
 }
 
 #endif

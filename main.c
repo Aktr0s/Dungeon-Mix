@@ -1,9 +1,7 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
-#include <windows.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "depletionLogic.h"
