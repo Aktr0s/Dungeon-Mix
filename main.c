@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
@@ -56,6 +57,7 @@ int main(){
     clearTerm();
     const char *filename = "dragonMix.savedisk";
     if (access(filename, F_OK) != 0) {
+        splashScreen();
         printf("It looks like your save file is gone or you started the game for the first time.\n");
         printf("Would you like to create a new save file? [Y/N]");
         char opt;
@@ -66,9 +68,11 @@ int main(){
         if (opt == 'y' || opt == 'Y')
         {
             save = true;
+            goto menu1;
         } else if (opt == 'n' || opt == 'N') {
-            printSlow("\nWarning you will play the game without a save file\nYour progress won't be saved.");
+            printSlow("\nWarning you will play the game without a save file\nYour progress won't be saved.\n");
             save = false;
+            goto menu1;
         }    
     }
     if (save){
@@ -87,6 +91,7 @@ int main(){
     printSlow("3. Display Description of the game\n");
     printSlow("4. Sell Your Potions\n");
     printSlow("5. Exit the game\n");
+    printSlow("6. Show splash screen\n");
     printSlow("So?: ");
     int option;
     scanf("%d",&option);
@@ -149,6 +154,11 @@ int main(){
         printf("Exiting...");
         fclose(savefile);
         return 0;
+    case 6:
+        clearTerm();
+        clearInputBuffer();
+        splashScreen();
+        break;
     default:
         clearTerm();
         printSlow("Wrong Choice. Please Select Again.");

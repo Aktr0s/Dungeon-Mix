@@ -10,7 +10,7 @@ void printSlow(const char *text) {
         } else {
         printf("%c", text[i]);
         fflush(stdout);
-        cross_sleep(1000); 
+        cross_sleep(10000); 
         }
     }
 }

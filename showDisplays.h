@@ -3,6 +3,15 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "slowWriting.h"
+
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        // Discard characters until the end of the line
+    }
+}
+
+
 //This function displays ending game screen
 void splashScreen(){
     printSlow("                    :. .-. :=:  :\n");
