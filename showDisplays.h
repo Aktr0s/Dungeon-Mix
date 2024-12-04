@@ -56,11 +56,11 @@ void splashScreen(){
     printSlow("                .:--..     ..  .-:\n");
     printSlow("                    .::-.  .  : .:\n");
     printSlow("                        :.-: -:--:\n");
-    printSlow("     ___                            __  ____     \n");
-    printSlow("    / _ \\_______ ____ ____  ___    /  |/  (_)_ __\n");
-    printSlow("   / // / __/ _ `/ _ `/ _ \\/ _ \\  / /|_/ / /\\ \\ /\n");
-    printSlow("  /____/_/  \\_,_/\\_, /\\___/_//_/ /_/  /_/_//_\\_\\ \n");
-    printSlow("                /___/                            \n");
+    printSlow("   ___                              //|__  ____     \n");
+    printSlow("  / _ \\__ _____  ___ ____ ___  ___ |/|/  |/  (_)_ __\n");
+    printSlow(" / // / // / _ \\/ _ `/ -_) _ \\/ _ \\  / /|_/ / /\\ \\ /\n");
+    printSlow("/____/\\_,_/_//_/\\_, /\\__/\\___/_//_/ /_/  /_/_//_\\_\\ \n");
+    printSlow("               /___/                                \n");
     printSlow("               *Press enter to play*             \n");
     while (getchar() != '\n');
 }

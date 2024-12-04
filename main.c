@@ -55,7 +55,7 @@ int main(){
     clearTerm();
     
     clearTerm();
-    const char *filename = "dragonMix.savedisk";
+    const char *filename = "dungeonMix.savedisk";
     if (access(filename, F_OK) != 0) {
         splashScreen();
         printf("It looks like your save file is gone or you started the game for the first time.\n");
@@ -76,7 +76,7 @@ int main(){
         }    
     }
     if (save){
-    savefile = fopen("dragonMix.savedisk","r");
+    savefile = fopen("dungeonMix.savedisk","r");
     fscanf(savefile, "%d", &potionVis);
     fscanf(savefile, "%d", &potionTaint);
     fscanf(savefile, "%d", &money);
@@ -145,7 +145,7 @@ int main(){
             }
         break;
     case 5:
-        if (save){savefile = fopen("dragonMix.savedisk","w");
+        if (save){savefile = fopen("dungeonMix.savedisk","w");
         printf("Saving...\n");
         fprintf(savefile,"%d\n",potionVis);
         fprintf(savefile,"%d\n",potionTaint);
