@@ -39,6 +39,7 @@ void splashScreen(){
     printGraphics(splashScreenGraphics);
     printGraphicsSlow(titleScreenGraphics);
     while (getchar() != '\n');
+    printf("\033[H\033[J");
 }
 
 void endGame(double vis, double taint, int mix){

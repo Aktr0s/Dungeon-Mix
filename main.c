@@ -9,6 +9,9 @@
 #include "helperDisplayFunc.h"
 #include "crossFunctions.h"
 
+#define MAX_TAINT 5.0
+#define MAX_VIS 25.0
+
 
 //Global variables
 double vis, taint;
@@ -17,6 +20,9 @@ int potionVis, potionTaint, money;
 double marketVis, marketTaint;
 FILE *savefile;
 bool save = true;
+bool loadSave = true;
+
+
 
 void displayUpdate(){
     for (int i = 0; i <= 5; i++) {
@@ -26,7 +32,6 @@ void displayUpdate(){
     cross_sleep(500000);
     printf("\033[H\033[J"); //ASCI Escape Code
     }
-
 }
 
 void calculations(){
@@ -39,13 +44,14 @@ void calculations(){
 void mixUpdate(){
     calculations();
     displayUpdate();
-    
 }
+
+
 
 int main(){
     srand(time(NULL));
-    marketTaint = ((double)rand() / RAND_MAX) * 5.0;
-    marketVis = ((double)rand() / RAND_MAX) * 25.0;
+    marketTaint = ((double)rand() / RAND_MAX) * MAX_TAINT;
+    marketVis = ((double)rand() / RAND_MAX) * MAX_VIS;
     if (marketTaint > marketVis){
         double temp = marketTaint;
         marketTaint = marketVis;
@@ -53,117 +59,134 @@ int main(){
     }
 
     printf("\033[H\033[J");
+    splashScreen();
 
     const char *filename = "dungeonMix.savedisk";
     if (access(filename, F_OK) != 0) {
-        splashScreen();
+        loadSave = false;
         printf("It looks like your save file is gone or you started the game for the first time.\n");
         printf("Would you like to create a new save file? [Y/N]");
         char opt;
         while (1){
-            scanf("%s",&opt);
-            if (opt == 'Y' || opt =='y' || opt == 'n' || opt == 'N') break;
+            scanf("%1s",&opt);
+            if (opt == 'y' || opt == 'Y'){
+                save = true;
+                break;
+            } else if (opt == 'n' || opt == 'N') {
+                printf("\n-----------------Warning------------------\n");
+                printf("You will play the game without a save file\nYour progress won't be saved.\n");
+                save = false;
+                break;
+            } else {
+                printf("Invalid input. Please enter 'Y' or 'N': ");
+                continue;
+            }
         }
-        if (opt == 'y' || opt == 'Y')
-        {
-            save = true;
-            goto menu1;
-        } else if (opt == 'n' || opt == 'N') {
-            printSlow("\nWarning you will play the game without a save file\nYour progress won't be saved.\n");
-            save = false;
-            goto menu1;
-        }    
+        
     }
-    if (save){
+    if (loadSave){
     savefile = fopen("dungeonMix.savedisk","r");
+    if (!savefile) {
+        perror("Failed to open save file");
+        exit(EXIT_FAILURE);
+    }
     fscanf(savefile, "%d", &potionVis);
     fscanf(savefile, "%d", &potionTaint);
     fscanf(savefile, "%d", &money);
     fclose(savefile);
     }
     
-    menu1:
-    printf("\n");
-    printSlow("What do you want to do?\n");
-    printSlow("1. Make Potions\n");
-    printSlow("2. Check Your Inventory\n");
-    printSlow("3. Display Description of the game\n");
-    printSlow("4. Sell Your Potions\n");
-    printSlow("5. Exit the game\n");
-    printSlow("6. Show splash screen\n");
-    printSlow("So?: ");
-    int option;
-    scanf("%d",&option);
-    switch (option)
-    {
-    case 1:
-        printf("\033[H\033[J");
-        printSlow("Enter the amout of mixings: ");
-        scanf("%d",&mix);
-        printSlow("Enter designated Vis and Taint amounts\nVis: ");
-        scanf("%lf",&vis);
-        printSlow("Taint: ");
-        scanf("%lf",&taint);
-        for (int i = 0; i <= mix; i++) {
-            mixUpdate();
+    while(1){
+        printf("\n");
+        printSlow("What do you want to do?\n");
+        printSlow("1. Make Potions\n");
+        printSlow("2. Check Your Inventory\n");
+        printSlow("3. Display Description of the game\n");
+        printSlow("4. Sell Your Potions\n");
+        printSlow("5. Exit the game\n");
+        printSlow("6. Show splash screen\n");
+        printSlow("So?: ");
+        int option;
+        scanf("%d",&option);
+        switch (option)
+        {
+        case 1:
+            printf("\033[H\033[J");
+            printSlow("Enter the amout of mixings: ");
+            scanf("%d",&mix);
+            if (mix > 20){
+                printSlow("You can't mix more than 20 times.\n");
+                printSlow("Setting to 20.\n");
+                mix = 15;
+            } else if (mix < 1) {
+                printSlow("You can't mix less than 1 time.\n");
+                printSlow("Setting to 1.\n");
+                mix = 1;
+            }
+            printSlow("Enter designated Vis and Taint amounts\nVis: ");
+            scanf("%lf",&vis);
+            printSlow("Taint: ");
+            scanf("%lf",&taint);
+            for (int i = 0; i <= mix; i++) {
+                mixUpdate();
+            }
+            if (vis > taint) {
+                vis = vis + taint;
+                taint = 0;
+                potionVis++;
+            } else if (taint > vis) {
+                taint = taint + vis;
+                vis = 0;
+                potionTaint++;
+            }
+        //This code just makes the sentence "cauldron full of" real
+        endGame(vis,taint,mix);
+            break;
+        case 2:
+            printf("\033[H\033[J");
+            displayPotions(potionVis, potionTaint, money);
+            break;
+        case 3:
+            printf("\033[H\033[J");
+            printSlow("\nThe game princible is very simple.\nYou brew potions with vis and taint amount which are the ingridients. \nYou also chose how many times you will mix the brew. \nDepending on your luck (or rather some stupid math) you will brew a Good (Vis) or Bad (Tainted) potion.\n\n");
+            break;
+        case 4:
+            printf("\033[H\033[J");
+            displayPotions(potionVis, potionTaint, money);
+            printSlow("Current market values: \n");
+            printSlow("Vis potion: ");
+            printf("%lf\n",marketVis);
+            printSlow("Taint potion: ");
+            printf("%lf\n",marketTaint);
+            printSlow("Do you want to sell?: [Y/N]");
+            char opt2;
+            scanf("%1s",&opt2);
+            if (opt2 == 'Y' || opt2 =='y'){
+                money = money + round((marketVis * potionVis) + (marketTaint * potionTaint));
+                potionVis = 0;
+                potionTaint = 0;
+            }
+            break;
+        case 5:
+            if (save){savefile = fopen("dungeonMix.savedisk","w");
+            printf("Saving...\n");
+            fprintf(savefile,"%d\n",potionVis);
+            fprintf(savefile,"%d\n",potionTaint);
+            fprintf(savefile,"%d",money);
+            }
+            printf("Exiting...");
+            fclose(savefile);
+            return 0;
+        case 6:
+            printf("\033[H\033[J");
+            clearInputBuffer();
+            splashScreen();
+            break;
+        default:
+            printf("\033[H\033[J");
+            printSlow("Wrong Choice. Please Select Again.");
+            break;
         }
-        if (vis > taint) {
-            vis = vis + taint;
-            taint = 0;
-            potionVis++;
-        } else if (taint > vis) {
-            taint = taint + vis;
-            vis = 0;
-            potionTaint++;
-        }
-    //This code just makes the sentence "cauldron full of" real
-    endGame(vis,taint,mix);
-        break;
-    case 2:
-        printf("\033[H\033[J");
-        displayPotions(potionVis, potionTaint, money);
-        break;
-    case 3:
-        printf("\033[H\033[J");
-        printSlow("\nThe game princible is very simple.\nYou brew potions with vis and taint amount which are the ingridients. \nYou also chose how many times you will mix the brew. \nDepending on your luck (or rather some stupid math) you will brew a Good (Vis) or Bad (Tainted) potion.\n\n");
-        break;
-    case 4:
-        printf("\033[H\033[J");
-        displayPotions(potionVis, potionTaint, money);
-        printSlow("Current market values: \n");
-        printSlow("Vis potion: ");
-        printf("%lf\n",marketVis);
-        printSlow("Taint potion: ");
-        printf("%lf\n",marketTaint);
-        printSlow("Do you want to sell?: [Y/N]");
-        char opt2;
-        scanf("%s",&opt2);
-        if (opt2 == 'Y' || opt2 =='y'){
-            money = money + round((marketVis * potionVis) + (marketTaint * potionTaint));
-            potionVis = 0;
-            potionTaint = 0;
-        }
-        break;
-    case 5:
-        if (save){savefile = fopen("dungeonMix.savedisk","w");
-        printf("Saving...\n");
-        fprintf(savefile,"%d\n",potionVis);
-        fprintf(savefile,"%d\n",potionTaint);
-        fprintf(savefile,"%d",money);
-        }
-        printf("Exiting...");
-        fclose(savefile);
-        return 0;
-    case 6:
-        printf("\033[H\033[J");
-        clearInputBuffer();
-        splashScreen();
-        break;
-    default:
-        printf("\033[H\033[J");
-        printSlow("Wrong Choice. Please Select Again.");
-        break;
     }
-    goto menu1;
     return 0;
 }
